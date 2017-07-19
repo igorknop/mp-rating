@@ -10,6 +10,10 @@
         border: 1px solid black;
         min-width: 60px;
       }
+      section>div>div>div{
+        width: 220px;
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
@@ -96,7 +100,7 @@
           eRound.innerHTML ="<h1>Rodada "+rounds.length+"</h1>";
           for (var m = 0; m < round.length; m++) {
             var eMesa = document.createElement("div");
-            eMesa.innerHTML = "<h2>Mesa "+(m+1)+"</h2>";
+            eMesa.innerHTML = "<h3>Mesa "+(m+1)+"</h3>";
              for(var p = 0; p < round[m].length; p++){
                round[m][p].games++;
                round[m][p].points += 8*p;
