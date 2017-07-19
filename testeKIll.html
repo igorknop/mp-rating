@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Teste mata mata multiplayer</title>
+    <style media="screen">
+      .player>div{
+        display: inline-block;
+        padding: 0.1em;
+        border: 1px solid black;
+        min-width: 60px;
+      }
+    </style>
+  </head>
+  <body>
+<form name="setup">
+  <label>Players: <input name="players" type="number" value="12"/></label>
+  <label>Cut: <input name="cut" type="number" value="35"/></label>
+  <label>Max Size: <input name="max" type="number" value="4"/></label>
+  <input type="submit"/>
+</form>
+<section></section>
+    <script>
+    var output = document.getElementsByTagName('section')[0];
+    document.setup.addEventListener('submit', function(e){
+      e.preventDefault();
+      JOGADORES = Number(document.setup.players.value);
+      CORTE = Number(document.setup.cut.value);
+      MAXMESA = Number(document.setup.max.value);
+      output.innerHTML = "";
+      output.appendChild(calc());
+    })
+    var JOGADORES = 12;
+    var CORTE = 35;
+    var MAXMESA = 4;
+      function Player(){
+        this.name = 'player ';
+        this.games = 0;
+        this.points = 0;
+      }
+      function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+      }
+      function printPlayers(playerArray){
+        var ePlayers = document.createElement('div');
+        for(var p = 0; p < playerArray.length; p++){
+          var ePlayer = document.createElement('div');
+          ePlayer.classList.add('player');
+          ePlayer.innerHTML = ("<div>"+playerArray[p].name +
+          "</div><div>"+playerArray[p].points+"pts</div><div>"+
+          playerArray[p].games+"j</div>");
+          ePlayers.appendChild(ePlayer);
+        }
+        return ePlayers;
+      }
+
+      function calc(){
+        var players = [];
+        var eliminated = [];
+        for (var i = 0; i < JOGADORES; i++) {
+          players[i] = new Player();
+          players[i].name += i;
+        }
+        players = shuffle(players);
+        var rounds = [];
+        var eRounds = document.createElement("div");
+        do {
+          players = shuffle(players);
+          var round = [];
+          var remPlayers = players.slice();
+          while (remPlayers.length>0) {
+            var mesa = remPlayers.splice(0,4);
+            if(mesa.length>2){
+              round.push(mesa);
+            } else {
+              round[round.length-1] = round[round.length-1].concat(mesa);
+            }
+          }
+          rounds.push(round);
+          var eRound = document.createElement("div");
+          eRound.innerHTML ="<h1>Rodada "+rounds.length+"</h1>";
+          for (var m = 0; m < round.length; m++) {
+            var eMesa = document.createElement("div");
+            eMesa.innerHTML = "<h2>Mesa "+(m+1)+"</h2>";
+             for(var p = 0; p < round[m].length; p++){
+               round[m][p].games++;
+               round[m][p].points += 8*p;
+               if(round[m][p].points>CORTE){
+                 eliminated.push(round[m][p]);
+                 players.splice(players.indexOf(round[m][p]),1);
+               }
+             }
+             eMesa.appendChild(printPlayers(round[m]));
+             eRound.appendChild(eMesa);
+          }
+          eRounds.appendChild(eRound);
+        } while (players.length>MAXMESA)
+
+        var eFinal = document.createElement("div");
+        eFinal.innerHTML = "<h1>Final</h1>";
+        eFinal.appendChild(printPlayers(players));
+        eRounds.appendChild(eFinal);
+        var eEliminados = document.createElement("div");
+        eEliminados.innerHTML = "<h1>Eliminados</h1>";
+        eEliminados.appendChild(printPlayers(eliminated));
+        eRounds.appendChild(eEliminados);
+        return eRounds;
+    }
+    </script>
+
+
+  </body>
+</html>
